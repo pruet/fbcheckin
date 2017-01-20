@@ -58,7 +58,7 @@ def get_credentials():
   return credentials
 
 def push_to_sheet(data_list, service, spreadsheet_id, sheet_name, student_num, week_count):
-  range_name = sheet_name + '!A2:' + str(student_num)
+  range_name = sheet_name + '!A2:' + str(int(student_num) + 1) 
   c_result = service.spreadsheets().values().get(spreadsheetId=spreadsheet_id,range=range_name).execute()
   c_values = c_result.get('values', [])
   i = int(week_count) - 1
