@@ -13,11 +13,10 @@ from oauth2client import tools
 from oauth2client.file import Storage
 
 
-try:
-    import argparse
-    flags = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
-except ImportError:
-    flags = None
+import argparse
+parser = argparse.ArgumentParser(parents=[tools.argparser])
+parser.add_argument('-c', '--course', dest='course', help='Course config file in .ini format')
+args = parser.parse_args()
 
 SCOPES = 'https://www.googleapis.com/auth/spreadsheets'
 CLIENT_SECRET_FILE = 'client_secret.json'
@@ -54,10 +53,7 @@ def get_credentials():
   if not credentials or credentials.invalid:
     flow = client.flow_from_clientsecrets(CLIENT_SECRET_FILE, SCOPES)
     flow.user_agent = APPLICATION_NAME
-    if flags:
-      credentials = tools.run_flow(flow, store, flags)
-    else:
-      credentials = tools.run(flow, store)
+    credentials = tools.run_flow(flow, store, args)
     print('Storing credentials to ' + credential_path)
   return credentials
 
@@ -90,7 +86,7 @@ def push_to_sheet(data_list, service, spreadsheet_id, sheet_name, student_num, w
 def main():
   # load config
   config = ConfigParser.ConfigParser()
-  config.read("443.ini")
+  config.read(args.course)
   access_token = config.get('facebook', 'access_token')
   group_id = config.get('facebook', 'group_id') + '/feed'
   spreadsheet_id = config.get('google', 'sheet_id')
